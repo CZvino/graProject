@@ -1,0 +1,127 @@
+﻿{
+  "resultCount":1,
+  "results":
+   [
+     {
+        "ipadScreenshotUrls":
+           [
+             "http://a5.mzstatic.com/us/r30/Purple71/v4/99/7d/4b/997d4b6e-3075-ec22-5f3f-426c485d981a/sc1024x768.jpeg",
+             "http://a2.mzstatic.com/us/r30/Purple71/v4/00/4a/2f/004a2ffb-840f-842e-4d8b-4ca9175ffada/sc1024x768.jpeg",
+             "http://a4.mzstatic.com/us/r30/Purple62/v4/54/37/ca/5437caf8-03b7-d292-9a44-adfc7925ee00/sc1024x768.jpeg",
+             "http://a1.mzstatic.com/us/r30/Purple71/v4/ce/18/9d/ce189d9b-cf7b-8a38-f38f-6ffac6275563/sc1024x768.jpeg",
+             "http://a5.mzstatic.com/us/r30/Purple71/v4/b9/75/16/b97516f9-2cb4-de99-284d-2ff48e6c8668/sc1024x768.jpeg"
+           ],
+        "appletvScreenshotUrls":[],
+        "artworkUrl512" : "http://is4.mzstatic.com/image/thumb/Purple22/v4/ef/da/70/efda705d-47dc-98ff-f7da-0c4e30814525/source/512x512bb.jpg",
+        "artistViewUrl" : "https://itunes.apple.com/cn/developer/alipay.com-co.-ltd/id333206292?uo=4",
+        "artworkUrl60" : "http://is4.mzstatic.com/image/thumb/Purple22/v4/ef/da/70/efda705d-47dc-98ff-f7da-0c4e30814525/source/60x60bb.jpg",
+        "artworkUrl100" : "http://is4.mzstatic.com/image/thumb/Purple22/v4/ef/da/70/efda705d-47dc-98ff-f7da-0c4e30814525/source/100x100bb.jpg",
+        "isGameCenterEnabled" : false,
+        "kind" : "software",
+        "features":
+         [
+            "iosUniversal"
+         ],
+        "supportedDevices":
+         [
+            "iPhone4",
+            "iPad2Wifi",
+            "iPad23G",
+            "iPhone4S",
+            "iPadThirdGen",
+            "iPadThirdGen4G",
+            "iPhone5",
+            "iPodTouchFifthGen",
+            "iPadFourthGen",
+            "iPadFourthGen4G",
+            "iPadMini",
+            "iPadMini4G",
+            "iPhone5c",
+            "iPhone5s",
+            "iPhone6",
+            "iPhone6Plus",
+            "iPodTouchSixthGen"
+         ],
+        "advisories":[], 
+        "screenshotUrls":
+         [
+            "http://a5.mzstatic.com/us/r30/Purple71/v4/98/42/67/9842678b-9314-5d19-fef6-f85da7d4e750/screen696x696.jpeg",
+            "http://a3.mzstatic.com/us/r30/Purple71/v4/14/fb/b1/14fbb135-fd33-3b7b-a29b-031e908cba8f/screen696x696.jpeg", 
+            "http://a3.mzstatic.com/us/r30/Purple71/v4/73/44/b5/7344b5c5-bc0f-94c7-bda0-051b8fae6065/screen696x696.jpeg",
+            "http://a5.mzstatic.com/us/r30/Purple19/v4/12/e2/e4/12e2e41a-bcba-af75-0617-3b5c51148de2/screen696x696.jpeg",
+            "http://a2.mzstatic.com/us/r30/Purple19/v4/9a/82/52/9a82521e-0779-1d03-5277-97756bd173a6/screen696x696.jpeg"
+         ],
+        "averageUserRatingForCurrentVersion":2.0,
+        "languageCodesISO2A":
+         [
+           "EN",
+           "ZH",
+           "ZH"
+         ],
+        "fileSizeBytes":"188688384",
+        "sellerUrl":"http://qianbao.alipay.com/",
+        "userRatingCountForCurrentVersion":3524,
+        "trackContentRating":"4+",
+        "trackCensoredName":"支付宝 - 让生活更简单",
+        "trackViewUrl":"https://itunes.apple.com/cn/app/zhi-fu-bao-rang-sheng-huo/id333206289?mt=8&uo=4",
+        "contentAdvisoryRating":"4+",
+        "wrapperType":"software",
+        "version":"9.9.8",
+        "currency":"CNY",
+        "artistId":333206292,
+        "artistName":"Alipay.com Co.,Ltd",
+        "genres":
+         [
+           "生活",
+           "财务"
+         ],
+        "price":0.00,
+        "description":"蚂蚁金服旗下的支付宝，是以每个人为中心，拥有超4.5亿实名用户的生活服务平台。目前，支付宝已发展成为融合了支付、生活服务、政务服务、社交、理财、保险、公益等多个场景与行业的开放性平台。
+                       除提供便捷的支付、转账、收款等基础功能外，还能快速完成信用卡还款、充话费、缴水电煤等！通过智能语音机器人一步触达上百种生活服务，不仅能享受消费打折，跟好友建群互动，还能轻松理财，累积信用，让生活更简单
+                       【官方微博】@支付宝 http://weibo.com/zfbwxzf
+                       【主要功能】
+                          1、支持余额宝，理财收益随时查看；
+                          2、支持各种场景关系，群聊群付更方便；
+                          3、提供本地生活服务，买单打折尽享优惠；
+                          4、为子女父母建立亲情账户；
+                          5、随时随地查询淘宝账单、账户余额、物流信息；
+                          6、免费异地跨行转账，信用卡还款、充值、缴水电煤气费；
+                          7、还信用卡、付款、缴费、充话费、卡券信息智能提醒；
+                          8、行走捐，支持接入iPhone健康数据，可与好友一起健康行走及互动，还可以参与公益。",
+        "bundleId":"com.alipay.iphoneclient",
+        "trackName":"支付宝 - 让生活更简单",
+        "trackId":333206289,
+        "releaseDate":"2009-10-15T23:00:27Z",
+        "primaryGenreName":"Lifestyle",
+        "currentVersionReleaseDate":"2016-11-24T22:43:49Z",
+        "isVppDeviceBasedLicensingEnabled":true,
+        "releaseNotes":"为了获得更好的用户体验，支付宝会在 App Store 中定期更新应用，建议打开 iPhone 手机“设置”-“iTunes Store与App Store”-“自动下载的项目”，确保第一时间体验更好的支付宝。
+                        本次更新：
+                          1.口碑1212优惠5折起，吃喝玩乐全搞定！
+                          2.口碑新增“人气眼”，展示周边最火的店，人气越高越火爆；
+                          3.口碑首页商户动态发布，新增美食、玩乐分类，评论参与互动；
+                          4.口碑推出一键预约手艺人，作品评价一目了然；
+                          5.支付宝“到位”占领全国；
+                          6.朋友聊天支持发送 gif 图片；
+                          7.生活圈发动态，支持 in 照片美化;
+                          8.“我的”页面全新改版。
+                        最近更新：
+                          1.愚人节的“到位”终于上线了! 首发上海，其他城市陆续开通中，敬请期待；
+                          2.口碑频道栏目全新上线，为您推荐最新、最热的品质好店，吃喝玩乐玩转生活；
+                          3.口碑店铺页全新改版，商家相册、推荐菜一目了然，使用更方便；
+                          4.校园生活改版，新增话题模块，以及社团、兼职、学生惠等服务；
+                          5.支持城市服务搜索，公积金查询、违章查询等一搜即得。",
+        "sellerName":"Alipay.com Co.,Ltd",
+        "primaryGenreId":6012,
+        "formattedPrice":"免费",
+        "genreIds":
+         [
+            "6012",
+            "6015"
+         ],
+        "minimumOsVersion":"7.0",
+        "userRatingCount":125722,
+        "averageUserRating":3.5
+     }
+   ]
+}   

@@ -1,0 +1,6 @@
+[INFO 2016-12-11 21:10:40,747 6888] [spider.py:31 get_app_info_by_name] search app name is '支付宝'
+[INFO 2016-12-11 21:10:40,747 6888] [spider.py:41 get_app_info_by_name] search url is 'https://itunes.apple.com/search?entity=software&term=%E6%94%AF%E4%BB%98%E5%AE%9D&country=cn&limit=1'
+[INFO 2016-12-11 21:10:41,743 6888] [spider.py:55 get_app_info_by_name] search '支付宝' success
+[INFO 2016-12-11 21:10:41,743 6888] [spider.py:64 get_app_info_by_id] search app id is '333206289'
+[INFO 2016-12-11 21:10:41,743 6888] [spider.py:68 get_app_info_by_id] search url is 'https://itunes.apple.com/lookup?entity=software&id=333206289'
+[INFO 2016-12-11 21:10:42,124 6888] [spider.py:79 get_app_info_by_id] search '333206289' success
