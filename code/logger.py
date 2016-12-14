@@ -14,6 +14,7 @@
 import logging
 import logging.handlers
 import os
+import sys
 
 LOG_FILE_PATH = os.getcwd()[:os.getcwd().rfind('graProject')+10] + "/log/"
 
@@ -28,6 +29,17 @@ LOG_MAP = {
 
 class Logger(object):
     """ custom class logger """
+    __FILE_HANDLER = logging.handlers.RotatingFileHandler(LOG_FILE_PATH + "logger_log",
+                                                          mode='a',
+                                                          maxBytes=10*1024*1024,
+                                                          backupCount=10,
+                                                          encoding='UTF-8')
+    __FILE_HANDLER.setLevel(logging.ERROR)
+    __LOG_FORMAT = logging.Formatter("[%(levelname)s %(asctime)s %(process)d] %(message)s")
+    __FILE_HANDLER.setFormatter(__LOG_FORMAT)
+    __LOG = logging.getLogger("logger")
+    __LOG.addHandler(__FILE_HANDLER)
+
     __slots__ = ('__logger', '__file_handler', '__console_handler')
 
     def __init__(self, logger_name, log_file, file_log_level, console_log_level):
@@ -53,30 +65,42 @@ class Logger(object):
         self.__logger.addHandler(self.__file_handler)
         self.__logger.addHandler(self.__console_handler)
 
+    def __get_caller_info(self, depth=1):
+        """ get information of caller of log funtion, including func name and lineno """
+        try:
+            file_name = sys._getframe(depth).f_code.co_filename
+            file_name = file_name[file_name.rfind('\\')+1:]
+            func_name = sys._getframe(depth).f_code.co_name
+            line_no = sys._getframe(depth).f_lineno
+            return '[' + file_name + ':' + str(line_no) + ' ' + func_name + '] '
+        except ValueError, excep:
+            Logger.__LOG.error(excep)
+            return ""
+
     def debug(self, msg):
         """ log dubug msg """
         if msg:
-            self.__logger.debug(msg)
+            self.__logger.debug(self.__get_caller_info(2) + msg)
 
     def info(self, msg):
         """ log info msg """
         if msg:
-            self.__logger.info(msg)
+            self.__logger.info(self.__get_caller_info(2) + msg)
 
     def warning(self, msg):
         """ log warning msg """
         if msg:
-            self.__logger.warning(msg)
+            self.__logger.warning(self.__get_caller_info(2) + msg)
 
     def error(self, msg):
         """ log error msg """
         if msg:
-            self.__logger.error(msg)
+            self.__logger.error(self.__get_caller_info(2) + msg)
 
     def critical(self, msg):
         """ log fatal msg """
         if msg:
-            self.__logger.critical(msg)
+            self.__logger.critical(self.__get_caller_info(2) + msg)
 
 def main():
     """ unit testing """

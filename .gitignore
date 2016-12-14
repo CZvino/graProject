@@ -1,2 +1,4 @@
 .vscode/
 *.pyc
+app_info.txt
+reviews.txt
