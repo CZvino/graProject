@@ -104,6 +104,8 @@ class Logger(object):
 
 def main():
     """ unit testing """
+    # TODO(zhangfan) : unit test
+
     first_log = Logger("first_logger", "test_log_1", "INFO", "ERROR")
 
     first_log.debug("test 1 debug")

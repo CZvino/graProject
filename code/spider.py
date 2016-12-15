@@ -12,14 +12,17 @@
 '''
 
 import json
+import os
 import sys
 import urllib2
 from logger import Logger
 
 SEARCH_URL_PREFIX = 'https://itunes.apple.com/search?entity=software'
 LOOKUP_URL_PREFIX = 'https://itunes.apple.com/lookup?entity=software'
-REVIEWS_URL_PREFIX = 'https://itunes.apple.com/rss/customerreviews/'
-REVIEWS_URL_SUFFIX = '/sortby=mostrecent/json?l=cn&cc=cn'
+# REVIEWS_URL_PREFIX = 'https://itunes.apple.com/rss/customerreviews/'
+# REVIEWS_URL_SUFFIX = '/sortby=mostrecent/json?l=cn&cc=cn'
+REVIEWS_URL_PREFIX = 'https://itunes.apple.com/cn/rss/customerreviews/'
+REVIEWS_URL_SUFFIX = '/sortby=mostrecent/json'
 
 class Spider(object):
     """ encapsulate spider function """
@@ -148,10 +151,14 @@ class Spider(object):
                    + "page=" + page_encoded
                    + "/id=" + track_id_encoded
                    + REVIEWS_URL_SUFFIX)
-            Spider.LOG.info("getting ")
+
+            Spider.LOG.info("getting page=" + str(page) + " with url='" + url + "'")
+
             try:
                 req = urllib2.urlopen(url)
                 rst_str = urllib2.unquote(req.read())
+                # NOTE(zhangfan) : uncomment next line to output return string
+                # print rst_str
             except urllib2.URLError, excep:
                 Spider.LOG.error("get response failed with parameter track_id=" + track_id)
                 Spider.LOG.error("Exception : " + str(excep))
@@ -216,8 +223,13 @@ def debug_print(data, depth, app_info_file):
 
 def main():
     """ unit testing """
+    # TODO(zhangfan) : unit test
+
+    file_path_prefix = os.getcwd()[:os.getcwd().rfind('graProject')+10] + "/result/"
+
     reviews_list = Spider.get_reviews_by_name("支付宝")
-    reviews_file = open('reviews.txt', 'w+')
+
+    reviews_file = open(file_path_prefix+'reviews_list.txt', 'w+')
     if reviews_list:
         print "reviews size : " + str(len(reviews_list))
         print >> reviews_file, "reviews size : " + str(len(reviews_list))
@@ -229,9 +241,9 @@ def main():
             print >> reviews_file, "  content   : " + review["content"]
             print >> reviews_file, "]"
     else:
-        print "sth error durning pulling reviews data"
+        print "sth error during pulling reviews data"
 
-    app_info_file = open('app_info.txt', 'w+')
+    app_info_file = open(file_path_prefix+'app_info.txt', 'w+')
     data = Spider.get_app_info_by_name("支付宝")
     if data:
         debug_print(data, 0, app_info_file)

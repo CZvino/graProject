@@ -1,18 +1,17 @@
-[INFO 2016-12-14 21:45:04,036 10296] [spider.py:33 get_app_info_by_name] search app name is '支付宝'
-[INFO 2016-12-14 21:45:04,038 10296] [spider.py:43 get_app_info_by_name] search url is 'https://itunes.apple.com/search?entity=software&term=%E6%94%AF%E4%BB%98%E5%AE%9D&country=cn&limit=1'
-[INFO 2016-12-14 21:45:04,941 10296] [spider.py:61 get_app_info_by_name] search '支付宝' success
-[INFO 2016-12-14 21:45:04,943 10296] [spider.py:141 get_reviews_by_id] getting reviews with track_id=333206289
-[INFO 2016-12-14 21:45:04,943 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:05,625 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:06,335 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:07,039 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:08,250 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:08,956 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:09,842 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:10,615 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:11,285 10296] [spider.py:151 get_reviews_by_id] getting 
-[INFO 2016-12-14 21:45:12,030 10296] [spider.py:151 get_reviews_by_id] getting 
-[ERROR 2016-12-14 21:45:12,684 10296] [spider.py:163 get_reviews_by_id] tranfer data by json failed. msg: Invalid control character at: line 52 column 97 (char 32737)
-[INFO 2016-12-14 21:45:12,688 10296] [spider.py:33 get_app_info_by_name] search app name is '支付宝'
-[INFO 2016-12-14 21:45:12,688 10296] [spider.py:43 get_app_info_by_name] search url is 'https://itunes.apple.com/search?entity=software&term=%E6%94%AF%E4%BB%98%E5%AE%9D&country=cn&limit=1'
-[INFO 2016-12-14 21:45:13,292 10296] [spider.py:61 get_app_info_by_name] search '支付宝' success
+[INFO 2016-12-15 18:59:43,769 2952] [spider.py:36 get_app_info_by_name] search app name is '支付宝'
+[INFO 2016-12-15 18:59:43,769 2952] [spider.py:46 get_app_info_by_name] search url is 'https://itunes.apple.com/search?entity=software&term=%E6%94%AF%E4%BB%98%E5%AE%9D&country=cn&limit=1'
+[INFO 2016-12-15 18:59:56,950 2952] [spider.py:64 get_app_info_by_name] search '支付宝' success
+[INFO 2016-12-15 18:59:56,950 2952] [spider.py:144 get_reviews_by_id] getting reviews with track_id=333206289
+[INFO 2016-12-15 18:59:56,950 2952] [spider.py:155 get_reviews_by_id] getting page=1 with url='https://itunes.apple.com/cn/rss/customerreviews/page=1/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 18:59:58,661 2952] [spider.py:155 get_reviews_by_id] getting page=2 with url='https://itunes.apple.com/cn/rss/customerreviews/page=2/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 18:59:59,201 2952] [spider.py:155 get_reviews_by_id] getting page=3 with url='https://itunes.apple.com/cn/rss/customerreviews/page=3/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 18:59:59,592 2952] [spider.py:155 get_reviews_by_id] getting page=4 with url='https://itunes.apple.com/cn/rss/customerreviews/page=4/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:01,617 2952] [spider.py:155 get_reviews_by_id] getting page=5 with url='https://itunes.apple.com/cn/rss/customerreviews/page=5/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:02,075 2952] [spider.py:155 get_reviews_by_id] getting page=6 with url='https://itunes.apple.com/cn/rss/customerreviews/page=6/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:02,974 2952] [spider.py:155 get_reviews_by_id] getting page=7 with url='https://itunes.apple.com/cn/rss/customerreviews/page=7/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:03,963 2952] [spider.py:155 get_reviews_by_id] getting page=8 with url='https://itunes.apple.com/cn/rss/customerreviews/page=8/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:04,816 2952] [spider.py:155 get_reviews_by_id] getting page=9 with url='https://itunes.apple.com/cn/rss/customerreviews/page=9/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:05,414 2952] [spider.py:155 get_reviews_by_id] getting page=10 with url='https://itunes.apple.com/cn/rss/customerreviews/page=10/id=333206289/sortby=mostrecent/json'
+[INFO 2016-12-15 19:00:06,187 2952] [spider.py:36 get_app_info_by_name] search app name is '支付宝'
+[INFO 2016-12-15 19:00:06,187 2952] [spider.py:46 get_app_info_by_name] search url is 'https://itunes.apple.com/search?entity=software&term=%E6%94%AF%E4%BB%98%E5%AE%9D&country=cn&limit=1'
+[INFO 2016-12-15 19:00:06,654 2952] [spider.py:64 get_app_info_by_name] search '支付宝' success
