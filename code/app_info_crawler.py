@@ -12,11 +12,13 @@
 '''
 
 import json
+import multiprocessing
 import os
 import random
 import socket
 import sys
 import urllib2
+from ssl import SSLError
 from constant import *
 from logger import Logger
 
@@ -43,56 +45,69 @@ def __build_opener():
     opener = urllib2.build_opener(proxy)
     return opener
 
-def get_app_info_by_name(app_name, country='cn', limit=1):
+def get_app_info_by_term(lock, term, country='cn', limit=1):
     """ request app information with input restriction and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
+    lock.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
+    lock.release()
 
-    __LOG.info("search app name is '" + app_name + "'")
+    __LOG.info("search app name is '" + term + "'")
 
-    app_name_encoded = urllib2.quote(app_name)
+    term_encoded = urllib2.quote(term)
     country_encoded = urllib2.quote(country)
 
     url = (SEARCH_URL_PREFIX
-           + '&term=' + app_name_encoded
+           + '&term=' + term_encoded
            + '&country=' + country_encoded
            + '&limit=' + str(limit))
 
     __LOG.info("search url is '" + url + "'")
     try:
         opener = __build_opener()
-        rst_str = urllib2.unquote(opener.open(url).read())
+        json_rst = opener.open(url, timeout=5)
+        rst_str = urllib2.unquote(json_rst.read())
     except urllib2.URLError, excep:
         __LOG.error("get response failed with parameter"
-                    + " app_name=" + app_name
+                    + " term=" + term
                     + " country=" + country
                     + " limit=" + str(limit))
         __LOG.error("Exception : " + str(excep))
-        return None
+        return FAIL, None
+    except SSLError, excep:
+        __LOG.error("get response timeout with parameter"
+                    + " term=" + term
+                    + " country=" + country
+                    + " limit=" + str(limit))
+        __LOG.error("Exception : " + str(excep))
+        return TIMEOUT, None
 
     try:
         rst_data = json.loads(rst_str)
     except ValueError, excep:
         __LOG.error("tranfer data by json failed. msg: " + str(excep))
-        return None
+        return FAIL, None
 
-    __LOG.info("search '" + app_name + "' success")
-    return rst_data
+    __LOG.info("search '" + term + "' success")
+    return SUCCESS, rst_data
 
-def get_app_info_by_id(track_id):
+def get_app_info_by_id(lock, track_id):
     """ request app information with input restriction and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
+
+    lock.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
+    lock.release()
 
     __LOG.info("search app id is '" +str(track_id)+ "'")
 
@@ -102,41 +117,51 @@ def get_app_info_by_id(track_id):
     __LOG.info("search url is '" + url + "'")
     try:
         opener = __build_opener()
-        rst_str = urllib2.unquote(opener.open(url).read())
+        json_rst = opener.open(url, timeout=5)
+        rst_str = urllib2.unquote(json_rst.read())
     except urllib2.URLError, excep:
         __LOG.error("get response failed with parameter track_id=" + str(track_id))
         __LOG.error("Exception : " + str(excep))
-        return None
+        return FAIL, None
+    except SSLError, excep:
+        __LOG.error("get response timeout with parameter track_id=" + str(track_id))
+        __LOG.error("Exception : " + str(excep))
+        return TIMEOUT, None
 
     try:
         rst_data = json.loads(rst_str)
     except ValueError, excep:
         __LOG.error("tranfer data by json failed. msg: " + str(excep))
-        return None
+        return FAIL, None
 
     __LOG.info("search '" + str(track_id) + "' success")
-    return rst_data
+    return SUCCESS, rst_data
 
-def get_reviews_by_name(app_name):
+def get_reviews_by_name(lock, app_name):
     """ request app reviews with input app_name and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
+
+    lock.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
+    lock.release()
 
-    app_info = get_app_info_by_name(app_name)
+    flag, app_info = get_app_info_by_term(lock, app_name)
+    if flag == TIMEOUT:
+        return TIMEOUT, None
     if (not app_info
             or not app_info.has_key("results")
             or len(app_info["results"]) == 0
             or not app_info["results"][0].has_key("trackId")):
         __LOG.error("get reviews failed with parameter app_name=" + app_name)
-        return None
+        return FAIL, None
 
     track_id = app_info["results"][0]["trackId"]
-    return get_reviews_by_id(str(track_id))
+    return get_reviews_by_id(lock, str(track_id))
 
 def __is_review_data(review):
     """ judge the data whether is a review data or not """
@@ -158,19 +183,22 @@ def __is_review_data(review):
         return False
     return True
 
-def get_reviews_by_id(track_id):
+def get_reviews_by_id(lock, track_id):
     """ request app reviews with input track_id and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
+
+    lock.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
+    lock.release()
 
     if not track_id.isdigit():
         __LOG.error("bad track_id: " + str(track_id))
-        return None
+        return FAIL, None
 
     __LOG.info("getting reviews with track_id=" + str(track_id))
 
@@ -213,7 +241,7 @@ def get_reviews_by_id(track_id):
             reviews_list.append(review)
 
     __LOG.info("get reviews of '" + str(track_id) + "' success")
-    return reviews_list
+    return SUCCESS, reviews_list
 
 def debug_print(data, depth, app_info_file):
     """ used in debug mode, print the returned data """
@@ -245,10 +273,11 @@ def debug_print(data, depth, app_info_file):
 def main():
     """ unit testing """
     # TODO(zhangfan) : unit test
+    lock = multiprocessing.Lock()
 
     file_path_prefix = os.getcwd()[:os.getcwd().rfind('graProject')+10] + "/result/"
 
-    reviews_list = get_reviews_by_name("支付宝")
+    flag, reviews_list = get_reviews_by_name(lock, "支付宝")
 
     reviews_file = open(file_path_prefix+'reviews_list.txt', 'w+')
     if reviews_list:
@@ -260,14 +289,14 @@ def main():
         print "sth error during pulling reviews data"
 
     app_info_file = open(file_path_prefix+'app_info.txt', 'w+')
-    data = get_app_info_by_name("支付宝")
+    flag, data = get_app_info_by_term(lock, "支付宝")
     if data:
         debug_print(data, 0, app_info_file)
         # pass
     else:
         print "return data is None"
 
-    # data = get_app_info_by_id(333206289)
+    # data = get_app_info_by_id(lock, 333206289)
     # if data:
         # debug_print(data, 0)
     #     pass
