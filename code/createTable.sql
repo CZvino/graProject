@@ -34,7 +34,7 @@ create table AppInformation
 
     wrapperType                         char(20),
     isGameCenterEnabled                 bit             default 'False',
-    isVppDeviceBasedLicensingEnabled    bit             defalut 'False',
+    isVppDeviceBasedLicensingEnabled    bit             default 'False',
 
     minimumOsVersion                    char(10)        default '0.0',
     supportedDevices                    text,
@@ -45,8 +45,6 @@ create table AppInformation
     description                         text,
 
 	languageCodesISO2A                  text,
-
-	wrapperType                         char(20),
 
     version                             char(15),
 	currentVersionReleaseDate           smalldatetime   default '1970-01-01 00:00:00',
