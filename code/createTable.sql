@@ -1,19 +1,19 @@
 create table Artist
 (
-	artistId    char(15)    PRIMARY KEY,
-	artistName  char(150)   NOT NULL,
+    artistId                            char(15)        PRIMARY KEY,
+    artistName                          char(150)       NOT NULL,
 )
 
 create table Genre
 (
-	genreId     char(4)    PRIMARY KEY,
-	genreName   char(15)    NOT NULL,
+    genreId                             char(4)         PRIMARY KEY,
+    genreName                           char(15)        NOT NULL,
 )
 
 create table Advisory
 (
-    advisoryId      char(4)     PRIMARY KEY,
-    advisoryContent text    NOT NULL,
+    advisoryId                          char(4)         PRIMARY KEY,
+    advisoryContent                     text            NOT NULL,
 )
 
 create table AppInformation
@@ -55,7 +55,7 @@ create table AppInformation
     artistId                            char(15)        NOT NULL,
     sellerName                          char(150),
 
-    trackCensoredName                   nchar(150)		NOT NULL,
+    trackCensoredName                   nchar(150)      NOT NULL,
     contentAdvisoryRating               char(5),
     trackContentRating                  char(5),
     advisories                          char(50),
