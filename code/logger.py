@@ -52,7 +52,7 @@ class Logger(object):
         self.__logger.setLevel(LOG_MAP[file_log_level])
         self.__file_handler = logging.handlers.RotatingFileHandler(log_path,
                                                                    mode='a',
-                                                                   maxBytes=10*1024*1024,
+                                                                   maxBytes=100*1024*1024,
                                                                    backupCount=10,
                                                                    encoding='UTF-8')
         self.__file_handler.setLevel(LOG_MAP[file_log_level])

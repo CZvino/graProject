@@ -22,6 +22,7 @@ from ssl import SSLError
 from constant import *
 from logger import Logger
 
+__LOCK = multiprocessing.Lock()
 __IS_INIT = False
 __IP_LIST = []
 __LOG = Logger("app_info_crawler_logger", "app_info_crawler_log", "INFO", "ERROR")
@@ -45,17 +46,17 @@ def __build_opener():
     opener = urllib2.build_opener(proxy)
     return opener
 
-def get_app_info_by_term(lock, term, country='cn', limit=1):
+def get_app_info_by_term(term, country='cn', limit=1):
     """ request app information with input restriction and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
-    lock.acquire()
+    __LOCK.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
-    lock.release()
+    __LOCK.release()
 
     __LOG.info("search app name is '" + term + "'")
 
@@ -80,11 +81,11 @@ def get_app_info_by_term(lock, term, country='cn', limit=1):
         __LOG.error("Exception : " + str(excep))
         return FAIL, None
     except SSLError, excep:
-        __LOG.error("get response timeout with parameter"
-                    + " term=" + term
-                    + " country=" + country
-                    + " limit=" + str(limit))
-        __LOG.error("Exception : " + str(excep))
+        __LOG.warning("get response timeout with parameter"
+                      + " term=" + term
+                      + " country=" + country
+                      + " limit=" + str(limit))
+        __LOG.warning("Exception : " + str(excep))
         return TIMEOUT, None
 
     try:
@@ -96,18 +97,18 @@ def get_app_info_by_term(lock, term, country='cn', limit=1):
     __LOG.info("search '" + term + "' success")
     return SUCCESS, rst_data
 
-def get_app_info_by_id(lock, track_id):
+def get_app_info_by_id(track_id):
     """ request app information with input restriction and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
-    lock.acquire()
+    __LOCK.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
-    lock.release()
+    __LOCK.release()
 
     __LOG.info("search app id is '" +str(track_id)+ "'")
 
@@ -124,33 +125,34 @@ def get_app_info_by_id(lock, track_id):
         __LOG.error("Exception : " + str(excep))
         return FAIL, None
     except SSLError, excep:
-        __LOG.error("get response timeout with parameter track_id=" + str(track_id))
-        __LOG.error("Exception : " + str(excep))
+        __LOG.warning("get response timeout with parameter track_id=" + str(track_id))
+        __LOG.warning("Exception : " + str(excep))
         return TIMEOUT, None
 
     try:
         rst_data = json.loads(rst_str)
     except ValueError, excep:
         __LOG.error("tranfer data by json failed. msg: " + str(excep))
+        __LOG.error(rst_str)
         return FAIL, None
 
     __LOG.info("search '" + str(track_id) + "' success")
     return SUCCESS, rst_data
 
-def get_reviews_by_name(lock, app_name):
+def get_reviews_by_name(app_name):
     """ request app reviews with input app_name and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
-    lock.acquire()
+    __LOCK.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
-    lock.release()
+    __LOCK.release()
 
-    flag, app_info = get_app_info_by_term(lock, app_name)
+    flag, app_info = get_app_info_by_term(app_name)
     if flag == TIMEOUT:
         return TIMEOUT, None
     if (not app_info
@@ -161,7 +163,7 @@ def get_reviews_by_name(lock, app_name):
         return FAIL, None
 
     track_id = app_info["results"][0]["trackId"]
-    return get_reviews_by_id(lock, str(track_id))
+    return get_reviews_by_id(str(track_id))
 
 def __is_review_data(review):
     """ judge the data whether is a review data or not """
@@ -183,18 +185,18 @@ def __is_review_data(review):
         return False
     return True
 
-def get_reviews_by_id(lock, track_id):
+def get_reviews_by_id(track_id):
     """ request app reviews with input track_id and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
-    lock.acquire()
+    __LOCK.acquire()
     global __IS_INIT
     if not __IS_INIT:
         __init_ip_list()
         __IS_INIT = True
         __LOG.info("init ip list successfully")
-    lock.release()
+    __LOCK.release()
 
     if not track_id.isdigit():
         __LOG.error("bad track_id: " + str(track_id))
@@ -227,6 +229,7 @@ def get_reviews_by_id(lock, track_id):
             rst_data = json.loads(rst_str)
         except ValueError, excep:
             __LOG.error("tranfer data by json failed. msg: " + str(excep))
+            __LOG.error(rst_str)
             continue
 
         if (not rst_data.has_key("feed")
@@ -273,11 +276,10 @@ def debug_print(data, depth, app_info_file):
 def main():
     """ unit testing """
     # TODO(zhangfan) : unit test
-    lock = multiprocessing.Lock()
 
     file_path_prefix = os.getcwd()[:os.getcwd().rfind('graProject')+10] + "/result/"
 
-    flag, reviews_list = get_reviews_by_name(lock, "支付宝")
+    flag, reviews_list = get_reviews_by_name("支付宝")
 
     reviews_file = open(file_path_prefix+'reviews_list.txt', 'w+')
     if reviews_list:
@@ -289,14 +291,14 @@ def main():
         print "sth error during pulling reviews data"
 
     app_info_file = open(file_path_prefix+'app_info.txt', 'w+')
-    flag, data = get_app_info_by_term(lock, "支付宝")
+    flag, data = get_app_info_by_term("支付宝")
     if data:
         debug_print(data, 0, app_info_file)
         # pass
     else:
         print "return data is None"
 
-    # data = get_app_info_by_id(lock, 333206289)
+    # data = get_app_info_by_id(333206289)
     # if data:
         # debug_print(data, 0)
     #     pass

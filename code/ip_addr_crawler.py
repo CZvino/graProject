@@ -144,11 +144,12 @@ def get_valid_ip_list():
         except TypeError:
             __LOG.error("find one process failed")
 
+    __LOG.info(str(len(valid_ip_list)) + " is available")
+
     file_path = FILEPATH + "/data/valid_ip_list"
     valid_ip_file = open(file_path, 'w+')
     for valid_ip in valid_ip_list:
         print >> valid_ip_file, valid_ip
-    return True
 
 def main():
     """ unit testing """
