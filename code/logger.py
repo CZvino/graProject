@@ -30,9 +30,6 @@ LOG_MAP = {
 class Logger(object):
     """ custom class logger """
     __FILE_HANDLER = logging.handlers.RotatingFileHandler(LOG_FILE_PATH + "logger_log",
-                                                          mode='a',
-                                                          maxBytes=10*1024*1024,
-                                                          backupCount=10,
                                                           encoding='UTF-8')
     __FILE_HANDLER.setLevel(logging.ERROR)
     __LOG_FORMAT = logging.Formatter("[%(levelname)s %(asctime)s %(process)d] %(message)s")
@@ -50,11 +47,7 @@ class Logger(object):
         """ complete basic configuration """
         self.__logger = logging.getLogger(logger_name)
         self.__logger.setLevel(LOG_MAP[file_log_level])
-        self.__file_handler = logging.handlers.RotatingFileHandler(log_path,
-                                                                   mode='a',
-                                                                   maxBytes=100*1024*1024,
-                                                                   backupCount=10,
-                                                                   encoding='UTF-8')
+        self.__file_handler = logging.handlers.RotatingFileHandler(log_path, encoding='UTF-8')
         self.__file_handler.setLevel(LOG_MAP[file_log_level])
         self.__console_handler = logging.StreamHandler()
         self.__console_handler.setLevel(LOG_MAP[console_log_level])

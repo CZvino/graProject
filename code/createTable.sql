@@ -38,7 +38,7 @@ create table AppInformation
     isGameCenterEnabled                 bit             default 'False',
     isVppDeviceBasedLicensingEnabled    bit             default 'False',
 
-    minimumOsVersion                    char(10)        default '0.0',
+    minimumOsVersion                    char(50)        default '0.0',
     supportedDevices                    text,
 
     primaryGenreId                      int             NOT NULL,
@@ -48,16 +48,16 @@ create table AppInformation
 
     languageCodesISO2A                  text,
 
-    version                             char(15),
+    version                             char(50),
     currentVersionReleaseDate           smalldatetime   default '1970-01-01 00:00:00',
     userRatingCountForCurrentVersion    int             default '0',
     averageUserRatingForCurrentVersion  decimal(2, 1)   default '0.0',
     releaseNotes                        text,
 	
     artistId                            bigint          NOT NULL,
-    sellerName                          nchar(150),
+    sellerName                          nchar(300),
 
-    trackCensoredName                   nchar(150)      NOT NULL,
+    trackCensoredName                   nchar(300)      NOT NULL,
     contentAdvisoryRating               char(5),
     trackContentRating                  char(5),
     advisories                          char(50),

@@ -120,13 +120,13 @@ def non_select_query(conn, sql):
 def main():
     conn = MsSqlConnection()
     conn.connect()
-    sql = "select track_id from AppleInformation"
+    sql = "select trackId from AppInformation"
     rst_list = select_query(conn, sql)
     if not rst_list:
         print "ERROR"
     else:
         for track_id in rst_list:
-            print track_id
+            print track_id[0]
 
 if __name__ == "__main__":
     main()

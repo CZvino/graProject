@@ -12,6 +12,8 @@ import mssql
 from logger import Logger
 from constant import SUCCESS, FAIL, TIMEOUT
 
+PROCESS_NUM = 15
+
 TRACK_ID_LIST = []
 ARTIST_ID_LIST = []
 GENRE_ID_LIST = []
@@ -119,21 +121,23 @@ def init_id_list():
         sql = "select advisoryId,advisoryContent from Advisory"
         advisory_id_list = mssql.select_query(conn, sql)
         for element in advisory_id_list:
-            ADVISORY_ID_DICT[str(element[1]).strip()] = str(element[0]).strip()
+            ADVISORY_ID_DICT[str(element[1].encode('utf-8')).strip()] = str(element[0]).strip()
             ADVISORY_ID_LIST.append(str(element[0]).strip())
         LOG.info("Get advisroy dict succ")
         conn.disconnect()
     except:
+        conn.disconnect()
         LOG.error("execute select failed")
         print "execute select failed"
         os._exit(0)
 
-def get_app_info(data_queue, queue_lock):
+def get_app_info(start, data_queue, queue_lock):
     """ get app info """
     term_q = Queue.Queue()
     # for category in CATEGORY_LIST:
     #     term_q.put(category)
-    for index in range(40, 68):
+    for index in range(start, len(CATEGORY_LIST), PROCESS_NUM):
+    # for index in range(start, 15, PROCESS_NUM):
         term_q.put(CATEGORY_LIST[index])
 
     LOG.info("get app info begin.")
@@ -370,10 +374,9 @@ def insert_into_appinfo_table(conn, app_info_data):
                + "'" + track_content_rating + "',"
                + "'" + advisories + "'"
                + ")")
-        conn.connect()
         if not mssql.non_select_query(conn, sql):
             LOG.error("insert new app info failed on track_id=" + str(app_info_data["trackId"]))
-            return True
+            return False
         TRACK_ID_LIST.append(track_id)
         LOG.info("insert appinformation with track_id=" + track_id)
     except Exception, excep:
@@ -383,26 +386,34 @@ def insert_into_appinfo_table(conn, app_info_data):
         return False
     return True
 
-def insert_data_into_database(data_queue, queue_lock):
+def insert_data_into_database(data_queue_list, queue_lock_list):
     """ insert or update data into database """
     init_id_list()
     conn = mssql.MsSqlConnection()
+    conn.connect()
+    done_flag = 0
     while True:
-        queue_lock.acquire()
-        if not data_queue.empty():
-            app_info_data = data_queue.get()
-            queue_lock.release()
-            if app_info_data == "Done":
-                break
-            conn.connect()
-            if (insert_into_artist_table(conn, app_info_data)
-                    and insert_into_genre_table(conn, app_info_data)
-                    and insert_into_advisory_table(conn, app_info_data)
-                    and insert_into_appinfo_table(conn, app_info_data)):
-                pass
-            conn.disconnect()
-        else:
-            queue_lock.release()
+        has_data = False
+        for index in range(PROCESS_NUM):
+            if not data_queue_list[index].empty():
+                queue_lock_list[index].acquire()
+                app_info_data = data_queue_list[index].get()
+                queue_lock_list[index].release()
+                has_data = True
+                if app_info_data == "Done":
+                    done_flag += 1
+                else:
+                    break
+        if done_flag == PROCESS_NUM and app_info_data == "Done":
+            break
+        if not has_data or app_info_data == "Done":
+            continue
+        if (insert_into_artist_table(conn, app_info_data)
+                and insert_into_genre_table(conn, app_info_data)
+                and insert_into_advisory_table(conn, app_info_data)
+                and insert_into_appinfo_table(conn, app_info_data)):
+            pass
+    conn.disconnect()
 
 def main():
     """ main """
@@ -410,11 +421,19 @@ def main():
     sys.setdefaultencoding('utf-8')
     start = time.clock()
     # ip_addr_crawler.get_valid_ip_list()
-    app_info_q = multiprocessing.Queue()
-    q_lock = multiprocessing.Lock()
-    get_app_info(app_info_q, q_lock)
-    print "tot_size", app_info_q.qsize()
-    insert_data_into_database(app_info_q, q_lock)
+    manager = multiprocessing.Manager()
+    app_info_queue_list = []
+    for index in range(PROCESS_NUM):
+        app_info_queue_list.append(manager.Queue())
+    q_lock_list = []
+    for index in range(PROCESS_NUM):
+        q_lock_list.append(manager.Lock())
+    pool = multiprocessing.Pool(processes=PROCESS_NUM)
+    for index in range(PROCESS_NUM):
+        pool.apply_async(get_app_info, (index, app_info_queue_list[index], q_lock_list[index], ))
+    pool.apply_async(insert_data_into_database, (app_info_queue_list, q_lock_list, ))
+    pool.close()
+    pool.join()
     end = time.clock()
     print "execute time : " + str(float(end - start)) + "s"
     print "Done"
