@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import jieba.analyse
 import multiprocessing
 import os
 import sys
@@ -131,41 +132,48 @@ def init_id_list():
         print "execute select failed"
         os._exit(0)
 
-def get_app_info(start, data_queue, queue_lock):
+def get_app_info(start, data_queue, category_list=None, genre_id=None):
     """ get app info """
     term_q = Queue.Queue()
     # for category in CATEGORY_LIST:
     #     term_q.put(category)
-    for index in range(start, len(CATEGORY_LIST), PROCESS_NUM):
-    # for index in range(start, 15, PROCESS_NUM):
-        term_q.put(CATEGORY_LIST[index])
+    if isinstance(category_list, list):
+        for index in range(start, len(category_list), PROCESS_NUM):
+            term_q.put(category_list[index])
+    else:
+        for index in range(start, len(CATEGORY_LIST), PROCESS_NUM):
+            term_q.put(CATEGORY_LIST[index])
 
     LOG.info("get app info begin.")
+    limit_dict = dict()
     while not term_q.empty():
         category = term_q.get()
         status, result = app_info_crawler.get_app_info_by_term(term=category,
                                                                country='cn',
-                                                               limit=200)
+                                                               limit=200,
+                                                               genre_id=genre_id)
+
         if status == TIMEOUT:
-            term_q.put(category)
+            if not limit_dict.has_key(category):
+                limit_dict[category] = 0
+            limit_dict[category] += 1
+            if limit_dict[category] <= 10:
+                LOG.warning("put " + category + " again.")
+                term_q.put(category)
         elif status == SUCCESS:
             if (not result.has_key("resultCount")
                     or not result.has_key("results")):
                 continue
-            queue_lock.acquire()
             for index in range(int(result["resultCount"])):
                 data_queue.put(result["results"][index])
-            queue_lock.release()
-            print (category.decode('utf-8') + " done " + str(result["resultCount"]) + "; "
-                   + str(term_q.qsize()) + " remains")
+            print start, (category.decode('utf-8') + " done " + str(result["resultCount"]) + "; "
+                          + str(term_q.qsize()) + " remains")
             LOG.info("get '" + category + "' info succ")
         elif status == FAIL:
             LOG.error("get '" + category + "' info failed")
 
-    queue_lock.acquire()
     data_queue.put("Done")
-    queue_lock.release()
-    LOG.info("get app info finish.")
+    LOG.info("No." + str(start) + " get app info finish.")
 
 def insert_into_artist_table(conn, app_info_data):
     """ insert into artist table """
@@ -386,7 +394,7 @@ def insert_into_appinfo_table(conn, app_info_data):
         return False
     return True
 
-def insert_data_into_database(data_queue_list, queue_lock_list):
+def insert_data_into_database(data_queue_list):
     """ insert or update data into database """
     init_id_list()
     conn = mssql.MsSqlConnection()
@@ -396,14 +404,13 @@ def insert_data_into_database(data_queue_list, queue_lock_list):
         has_data = False
         for index in range(PROCESS_NUM):
             if not data_queue_list[index].empty():
-                queue_lock_list[index].acquire()
                 app_info_data = data_queue_list[index].get()
-                queue_lock_list[index].release()
                 has_data = True
                 if app_info_data == "Done":
                     done_flag += 1
                 else:
                     break
+
         if done_flag == PROCESS_NUM and app_info_data == "Done":
             break
         if not has_data or app_info_data == "Done":
@@ -415,25 +422,84 @@ def insert_data_into_database(data_queue_list, queue_lock_list):
             pass
     conn.disconnect()
 
+def __is_legal_keyword(keyword):
+    for char in keyword:
+        if ord(char) >= 128:
+            return True
+    return False
+
+def gen_keyword_list(genre_name, keyword_list):
+    ''' get keyword from description '''
+    genre_id = "0000"
+    try:
+        conn = mssql.MsSqlConnection()
+        if not conn.connect():
+            LOG.error("connect to database failed")
+            return
+        sql = "select genreId from Genre where genreName='" + genre_name + "'"
+        genre_rst = mssql.select_query(conn, sql)
+        for element in genre_rst:
+            genre_id = str(element[0])
+        LOG.info("select genre succ")
+
+        sql = "select description from AppInformation where primaryGenreId='" + genre_id + "'"
+        description_rst = mssql.select_query(conn, sql)
+        for element in description_rst:
+            keywords = jieba.analyse.extract_tags(str(element[0]), topK=10)
+            for keyword in keywords:
+                keyword = str(keyword)
+                if keyword not in keyword_list and __is_legal_keyword(keyword):
+                    keyword_list.append(keyword)
+        LOG.info("load keyword list succ")
+        conn.disconnect()
+    except:
+        LOG.error("execute select failed")
+        conn.disconnect()
+    return genre_id
+
 def main():
     """ main """
     reload(sys)
     sys.setdefaultencoding('utf-8')
     start = time.clock()
+
     # ip_addr_crawler.get_valid_ip_list()
     manager = multiprocessing.Manager()
     app_info_queue_list = []
     for index in range(PROCESS_NUM):
         app_info_queue_list.append(manager.Queue())
-    q_lock_list = []
-    for index in range(PROCESS_NUM):
-        q_lock_list.append(manager.Lock())
+    '''
+    # q_lock_list = []
+    # for index in range(PROCESS_NUM):
+    #     q_lock_list.append(manager.Lock())
     pool = multiprocessing.Pool(processes=PROCESS_NUM)
     for index in range(PROCESS_NUM):
-        pool.apply_async(get_app_info, (index, app_info_queue_list[index], q_lock_list[index], ))
-    pool.apply_async(insert_data_into_database, (app_info_queue_list, q_lock_list, ))
+        pool.apply_async(get_app_info, (index, app_info_queue_list[index], ))
+    # pool.apply_async(insert_data_into_database, (app_info_queue_list, ))
     pool.close()
     pool.join()
+    insert_data_into_database(app_info_queue_list)
+
+    '''
+    gen_list = [
+        '财务',
+    ]
+
+    keyword_list = []
+    for category in gen_list:
+        genre_id = gen_keyword_list(category, keyword_list)
+
+        del app_info_queue_list[:]
+        app_info_queue_list = []
+        for index in range(PROCESS_NUM):
+            app_info_queue_list.append(manager.Queue())
+        pool = multiprocessing.Pool(processes=PROCESS_NUM)
+        for index in range(PROCESS_NUM):
+            pool.apply_async(get_app_info, (index, app_info_queue_list[index], keyword_list[:100], genre_id, ))
+        pool.close()
+        pool.join()
+        insert_data_into_database(app_info_queue_list)
+
     end = time.clock()
     print "execute time : " + str(float(end - start)) + "s"
     print "Done"

@@ -27,7 +27,7 @@ from constant import *
 __LOG = Logger("ip_addr_crawler_logger", "ip_addr_crawler_log", "INFO", "ERROR")
 
 def __check_ip_is_valid(proxy_info):
-    socket.setdefaulttimeout(5)
+    socket.setdefaulttimeout(3)
     proxy = {proxy_info[0]:proxy_info[0]+'://'+proxy_info[1]+':'+proxy_info[2]}
 
     app_info_url = "https://itunes.apple.com/lookup?id=333206289"

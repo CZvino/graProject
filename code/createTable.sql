@@ -19,7 +19,7 @@ create table Advisory
 create table AppInformation
 (
     trackId                             bigint          PRIMARY KEY,
-    trackName                           nchar(150)      NOT NULL,
+    trackName                           nchar(500)      NOT NULL,
     bundleId                            nchar(150)      NOT NULL,
 
     keywords                            nchar(300),
@@ -55,9 +55,9 @@ create table AppInformation
     releaseNotes                        text,
 	
     artistId                            bigint          NOT NULL,
-    sellerName                          nchar(300),
+    sellerName                          nchar(500),
 
-    trackCensoredName                   nchar(300)      NOT NULL,
+    trackCensoredName                   nchar(500)      NOT NULL,
     contentAdvisoryRating               char(5),
     trackContentRating                  char(5),
     advisories                          char(50),

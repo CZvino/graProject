@@ -11,6 +11,7 @@
     Any issues or improvements please contact ninja_zfan@126.com
 '''
 
+import datetime
 import logging
 import logging.handlers
 import os
@@ -40,7 +41,7 @@ class Logger(object):
     __slots__ = ('__logger', '__file_handler', '__console_handler')
 
     def __init__(self, logger_name, log_file, file_log_level, console_log_level):
-        log_path = LOG_FILE_PATH + log_file
+        log_path = LOG_FILE_PATH + log_file + "_" + datetime.datetime.now().strftime("%Y%m%d")
         self.config(logger_name, log_path, file_log_level, console_log_level)
 
     def config(self, logger_name, log_path, file_log_level, console_log_level):

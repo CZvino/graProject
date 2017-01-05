@@ -12,6 +12,7 @@
 '''
 
 import json
+import httplib
 import multiprocessing
 import os
 import random
@@ -46,7 +47,7 @@ def __build_opener():
     opener = urllib2.build_opener(proxy)
     return opener
 
-def get_app_info_by_term(term, country='cn', limit=1):
+def get_app_info_by_term(term, country='cn', limit=1, genre_id=None):
     """ request app information with input restriction and return the data after unparsed. """
     reload(sys)
     sys.setdefaultencoding('utf-8')
@@ -58,7 +59,7 @@ def get_app_info_by_term(term, country='cn', limit=1):
         __LOG.info("init ip list successfully")
     __LOCK.release()
 
-    __LOG.info("search app name is '" + term + "'")
+    __LOG.info("search app term is '" + term + "'")
 
     term_encoded = urllib2.quote(term)
     country_encoded = urllib2.quote(country)
@@ -67,11 +68,13 @@ def get_app_info_by_term(term, country='cn', limit=1):
            + '&term=' + term_encoded
            + '&country=' + country_encoded
            + '&limit=' + str(limit))
+    if genre_id:
+        url += '&genreId=' + str(genre_id)
 
     __LOG.info("search url is '" + url + "'")
     try:
         opener = __build_opener()
-        json_rst = opener.open(url, timeout=5)
+        json_rst = opener.open(url, timeout=10)
         rst_str = urllib2.unquote(json_rst.read())
     except urllib2.URLError, excep:
         __LOG.error("get response failed with parameter"
@@ -87,11 +90,21 @@ def get_app_info_by_term(term, country='cn', limit=1):
                       + " limit=" + str(limit))
         __LOG.warning("Exception : " + str(excep))
         return TIMEOUT, None
+    except httplib.IncompleteRead, excep:
+        __LOG.warning(repr(excep))
+        return TIMEOUT, None
+    except Exception, excep:
+        __LOG.warning(repr(excep))
+        return TIMEOUT, None
 
     try:
         rst_data = json.loads(rst_str)
     except ValueError, excep:
         __LOG.error("tranfer data by json failed. msg: " + str(excep))
+        return FAIL, None
+    except Exception, excep:
+        __LOG.error("Unknown exception")
+        __LOG.error(repr(excep))
         return FAIL, None
 
     __LOG.info("search '" + term + "' success")
@@ -118,7 +131,7 @@ def get_app_info_by_id(track_id):
     __LOG.info("search url is '" + url + "'")
     try:
         opener = __build_opener()
-        json_rst = opener.open(url, timeout=5)
+        json_rst = opener.open(url, timeout=10)
         rst_str = urllib2.unquote(json_rst.read())
     except urllib2.URLError, excep:
         __LOG.error("get response failed with parameter track_id=" + str(track_id))
@@ -128,12 +141,22 @@ def get_app_info_by_id(track_id):
         __LOG.warning("get response timeout with parameter track_id=" + str(track_id))
         __LOG.warning("Exception : " + str(excep))
         return TIMEOUT, None
+    except httplib.IncompleteRead, excep:
+        __LOG.warning(repr(excep))
+        return TIMEOUT, None
+    except Exception, excep:
+        __LOG.warning(repr(excep))
+        return TIMEOUT, None
 
     try:
         rst_data = json.loads(rst_str)
     except ValueError, excep:
         __LOG.error("tranfer data by json failed. msg: " + str(excep))
         __LOG.error(rst_str)
+        return FAIL, None
+    except Exception, excep:
+        __LOG.error("Unknown exception")
+        __LOG.error(repr(excep))
         return FAIL, None
 
     __LOG.info("search '" + str(track_id) + "' success")
@@ -224,12 +247,22 @@ def get_reviews_by_id(track_id):
             __LOG.error("get response failed with parameter track_id=" + track_id)
             __LOG.error("Exception : " + str(excep))
             continue
+        except httplib.IncompleteRead, excep:
+            __LOG.error(repr(excep))
+            continue
+        except Exception, excep:
+            __LOG.error(repr(excep))
+            continue
 
         try:
             rst_data = json.loads(rst_str)
         except ValueError, excep:
             __LOG.error("tranfer data by json failed. msg: " + str(excep))
             __LOG.error(rst_str)
+            continue
+        except Exception, excep:
+            __LOG.error("Unknown exception")
+            __LOG.error(repr(excep))
             continue
 
         if (not rst_data.has_key("feed")
